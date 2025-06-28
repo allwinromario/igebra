@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Light theme (default) */
+:root {
+  --bg-main: 255 255 255;
+  --bg-sidebar: 249 250 251;
+  --text-primary: 17 24 39;
+  --text-secondary: 107 114 128;
+  --border-color: 229 231 235;
+}
+
+/* Dark theme */
+:root.dark {
+  --bg-main: 17 24 39;
+  --bg-sidebar: 31 41 55;
+  --text-primary: 255 255 255;
+  --text-secondary: 156 163 175;
+  --border-color: 55 65 81;
+}
+
+/* Base styles */
+body {
+  background-color: rgb(var(--bg-main));
+  color: rgb(var(--text-primary));
+}
+
+/* Smooth transitions */
+*, *::before, *::after {
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}

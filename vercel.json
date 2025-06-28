@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps --no-package-lock",
+  "env": {
+    "NODE_VERSION": "18.x",
+    "NPM_FLAGS": "--legacy-peer-deps --no-package-lock",
+    "NODE_OPTIONS": "--max_old_space_size=4096",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "VERCEL_FORCE_NO_BUILD_CACHE": "1"
+  }
+} 

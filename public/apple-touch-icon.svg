@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle with gradient -->
+  <rect width="180" height="180" fill="url(#gradient)" rx="45"/>
+  
+  <!-- Simplified Circuit + Math Symbol (scaled and centered) -->
+  <g transform="translate(45,45) scale(2.8125)">
+    <path d="M8 16h16M16 8v16" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="16" cy="16" r="6" stroke="#ffffff" stroke-width="2" stroke-linecap="round" fill="none"/>
+  </g>
+  
+  <!-- Gradient Definitions -->
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+</svg> 
