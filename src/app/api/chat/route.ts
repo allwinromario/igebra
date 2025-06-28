@@ -1,15 +1,4 @@
 import { NextResponse } from 'next/server'
-import { Groq } from 'groq-sdk'
-
-// Validate API key
-const apiKey = process.env.GROQ_API_KEY
-if (!apiKey) {
-  throw new Error('GROQ_API_KEY is not set in environment variables')
-}
-
-const groq = new Groq({
-  apiKey,
-})
 
 // IMPORTANT! Set the runtime to edge
 export const runtime = 'edge'
@@ -94,8 +83,17 @@ export async function POST(req: Request) {
       console.log('Request messages:', JSON.stringify(messages, null, 2))
       
       // Make the API call with a timeout
-      const completion = await Promise.race([
-        groq.chat.completions.create({
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
           messages: [
             { role: 'system', content: finalSystemPrompt },
             ...messages.map((msg: any) => ({
@@ -103,16 +101,19 @@ export async function POST(req: Request) {
               content: msg.content,
             })),
           ],
-          model: 'llama-3.3-70b-versatile',
           temperature: 0.7,
           max_tokens: 2000,
-          stream: false,
         }),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('API request timeout')), 25000)
-        ),
-      ]);
+        signal: controller.signal,
+      });
 
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`Groq API error: ${response.status} ${response.statusText}`);
+      }
+
+      const completion = await response.json();
       console.log('API Response:', completion);
 
       return NextResponse.json(completion, { headers: corsHeaders });
@@ -120,19 +121,19 @@ export async function POST(req: Request) {
       // Enhanced error logging
       console.error('Groq API Error Details:', {
         message: apiError.message,
-        status: apiError.status,
-        response: apiError.response?.data,
+        name: apiError.name,
         stack: apiError.stack,
       });
 
+      const isTimeout = apiError.name === 'AbortError';
       return NextResponse.json(
         {
-          error: apiError.message === 'API request timeout'
+          error: isTimeout
             ? 'The request took too long to complete. Please try again.'
             : 'Failed to get response from Groq API. Please try again.',
           details: apiError.message,
         },
-        { status: apiError.status || 500, headers: corsHeaders }
+        { status: isTimeout ? 408 : 500, headers: corsHeaders }
       );
     }
   } catch (error: any) {
